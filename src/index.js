@@ -1,17 +1,75 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import "./styles.css";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import React,{useState}from "react";
+import ReactDOM from "react-dom";
+import Layout from "./components/layout/Layout";
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+import AddTodo from './components/addtodo/Addtodo'
+import TodoList from "./components/list/TodoList";
+
+
+const TodoApp = (props => {
+
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+
+  const clearInputAndAddTodo = _ => {
+    clearInput();
+    addTodo(inputValue);
+  };
+
+  const clearInput = ()=>{
+    setInputValue("")
+  }
+  
+  const onHandleChange = e =>{
+    setInputValue(e.target.value)
+  }
+   
+  const addTodo =  text => {
+    if (text !== "") {
+      setTodos(
+        todos.concat({
+          text,
+          checked: false
+        })
+      );
+    }
+  }
+
+  const checkTodo = id => {
+    setTodos(
+      todos.map((todo, index) => {
+        if (id === index) {
+          todo.checked = !todo.checked;
+        }
+
+        return todo;
+      })
+    );
+  }
+
+  const removeTodo = id => {
+    setTodos(todos.filter((todo, index) => id !== index));
+  }
+
+
+  return (
+    <Layout>
+      <AddTodo
+        inputValue={inputValue}
+        onInputChange={onHandleChange}
+        onButtonClick={clearInputAndAddTodo}
+      />
+      <TodoList
+        items={todos}
+        onItemCheck={id => checkTodo(id)}
+        onItemRemove={id => removeTodo(id)}
+      />
+    </Layout>
+  );
+});
+
+const rootElement = document.getElementById("root");
+ReactDOM.render(<TodoApp />, rootElement);
